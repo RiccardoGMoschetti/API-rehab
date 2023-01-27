@@ -1,0 +1,8 @@
+theme: jekyll-theme-architect
+show_downloads: false
+title: API-sault
+description: What are the limits of your cloud API service?
+github:
+  is_project_page: true
+  repository_url: https://github.com/API-sault/src
+exclude:
