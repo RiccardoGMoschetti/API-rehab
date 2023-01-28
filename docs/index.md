@@ -1,7 +1,8 @@
-# Where should I host my APIs?
+# Do you know the limits of your APIs?
 This is a study to orientate the software architect / infrastructure expert in the solution of these classical cloud performance problems: 
 - _what pricing tier should I use to serve a certain number of calls?_
 - _should I use a single powerful service, or more smaller services?_
+- _is Linux better than Windows_?
 
 This study focuses (so far) on:
 - Azure Functions (both Linux and Windows)
