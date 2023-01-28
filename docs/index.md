@@ -1,4 +1,4 @@
-# What is this?
+# Where should I host my APIs?
 This is a study to orientate the software architect / infrastructure expert in the solution of these classical cloud performance problems: 
 - _what pricing tier should I use to serve a certain number of calls?_
 - _should I use a single powerful service, or more smaller services?_
