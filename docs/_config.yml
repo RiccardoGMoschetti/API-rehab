@@ -3,8 +3,8 @@ plugins:
 - jekyll-remote-theme 
 show_downloads: false
 title: API-sault
-description: Do you know the limits of your cloud API service? A performance extravaganza
+description: A performance extravaganza
 github:
   is_project_page: true
-  repository_url: https://github.com/API-sault/src
+  repository_url: https://github.com/RiccardoGMoschetti/API-sault
 exclude:
