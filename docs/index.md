@@ -34,7 +34,7 @@ Even though your software and dependencies can be _very_ different from those we
 We tested all of the Azure Function production-ready tiers available in West Europe (S\*, P\*V2, P\*V3) in both OSs available (Linux and Windows).
 The client machine generating the load was a (costly) Ubuntu 22.04 VM.
 The Azure functions were in the same virtual network of the VM via private endpoints.
-Also the Azure Redis Cache and the SQL Database were in the same network, on different subnets. This is an architectural drawing of the solution:
+Also the Azure Redis Cache and the SQL Database were in the same network, on different subnets. This is an architectural drawing of the solution: ![Architecture of the APIsault solution on Azure](/docs/assets/images/Architecture_ApiSault_Functions_on_Azure.drawio.png)
 
 ## The load tools we used
 We used <a href="https://github.com/tsenart/vegeta">Vegeta</a>, a neat tool which can easily generate a big amount of concurrent calls. We used the version 12.8.3 as the latest did not seem to have been built for ARM64.
