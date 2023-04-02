@@ -1,12 +1,10 @@
+
 #!/bin/bash
 # usage: bash ./performanceStresser 2>&1 | tee -a "peformanceResults.txt"
 
-# To be able to automatically scale your function withthis script, you should create in your Azure Active Directory tenant a service principal that has access to that function.
-# The service principal has an app_id, a client_secret, and a tenant_id
-
-app_id="{your app id}"
-client_secret="{your app secret}"
-tenant_id="{your tenant id}"
+app_id="d7427d07-39fe-427f-8650-107f55730b5c"
+password="ZR18Q~cpq7P_g4VwOrccnUNcoSI5PWeMklvwCapK"
+tenant_id="3a088de6-0230-4e68-9ee0-14400e2b9d21"
 
 resource_group="apiSault"
 app_plan="apiSault"
@@ -14,7 +12,7 @@ function="apiSault-linux"
 api_to_call="JustWait?waitMS=2000"
 
 output_file_prefix="latestResults"
-duration="600s"
+duration="10s"
 
 ulimit -m 1000000
 ulimit -n 1000000
