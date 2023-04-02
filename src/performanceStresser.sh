@@ -8,12 +8,12 @@ app_id="{your app id}"
 client_secret="{your app secret}"
 tenant_id="{your tenant id}"
 
-resource_group="apiSault"
-app_plan="apiSault"
-function="apiSault-linux"
+resource_group="{your resource group}"
+app_plan="{your app plan}"
+function="{name of your function}"
 api_to_call="JustWait?waitMS=2000"
 
-output_file_prefix="latestResults"
+output_file_prefix="{output file prefix}"
 duration="600s"
 
 ulimit -m 1000000
