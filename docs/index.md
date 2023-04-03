@@ -1,4 +1,4 @@
-# How many requests will my API support once they go live?
+# How many requests will my APIs support?
 That is the question that has bugged IT professionals ever since.  
 Two main variables (obviously) determine the answer:
 - what hardware you'll be using
