@@ -1,10 +1,10 @@
-# How many requests will my API support in production?
+# How many requests will my API support once they go live?
 That is the question that has bugged IT professionals ever since.  
 Two main variables (obviously) determine the answer:
 - what hardware you'll be using
 - the scalability of the software you'll be writing
 
-Whereas the second factor is difficult to determine, you can work on the first, and try to know what are the upper limits of the first.
+Whereas the second factor is difficult to determine, you can discover the upper limits of the first, and work from there.
 
 This site would like to give you some data to help taking these decisions: 
 - _what pricing tier is needed to sustain a certain number of API calls?_
@@ -16,14 +16,14 @@ Our journey starts with these technologies:
 - Azure Functions on App Service Plans (both Linux and Windows)
 - .NET workloads
 
-## What did we find with Azure Functions?
+## What we found for Azure Functions?
 Nothing that we did not expect: more expensive Azure Functions guaranteed better performance.  
-However, how better and how expensive suprised us in some cases.
+However, how better and how expensive intrigued us in some cases, especially for the top tier.
 
 ## How we measured Azure Functions
 This very repo hosts (in the /src folder) a .NET 7 isolated process project. 
 That project uses three types of APIs to determine the upper limits of Azure Functions
-- APIs that only handle in memory objects, without dependencies on other resources (the basic APIs)
+- APIs that only handle in memory objects, with no dependencies on other resources (the basic APIs)
 - APIs that on purpose waste some time before returing an answer
 - (more realistic) APIs that read and write data from a Redis Cache and a SQL DB \[the result parsing of these is a WIP]
 
@@ -33,18 +33,19 @@ Even though your software and dependencies can be _very_ different from those we
 ## The infrastructure / architecture we tested
 We tested all of the Azure Function production-ready tiers available in West Europe (S\*, P\*V2, P\*V3) in both OSs available (Linux and Windows).
 The client machine generating the load was a 64 GB / 8 CPU Ubuntu 22.04 VM.
-The Azure functions were in the same virtual network of the VM via private endpoints.
+The Azure functions were placed in the same data center and virtual network of the VM, via private endpoints.
 Also the Azure Redis Cache and the SQL Database were in the same network, on different subnets. This is an architectural drawing of the solution:  
 <img src="./assets/images/Architecture_ApiSault_Functions_on_Azure.drawio.png"/>.
 You can download the original diagrams.net (formerly draw.io) drawing <a href="https://github.com/RiccardoGMoschetti/API-sault/blob/0309d506e0a3876d8de130dd95a27e126fe9ea6b/docs/Architecture_ApiSault_Functions_on_Azure.drawio">here</a>.
 
-## The load tools we used
+## The load tool we used
 We used <a href="https://github.com/tsenart/vegeta">Vegeta</a>, a simple yet reliable tool which can easily generate a big amount of concurrent calls. We used the version 12.8.3 as the latest did not seem to have been built for ARM64.
 
 ## What is better, Linux or Windows?
-They are very similar, except for the P2 tier, where Windows is much better. However, Linux is cheaper. If your application is stateless, more Linux resources can give you better performance at lower prices.
+They are very similar, except for the P2 tier, where Windows is definitely better. For the P3 tier, Linux is more comparable.  
+Linux is always cheaper (especially in the P3 tier). If your application is stateless, more Linux resources can give you better performance at lower prices and they should be used rather than Windows.
 
-## Now, some results
+## The data we worked with
 For every tier of the available Azure Functions, Vegeta gave us the following information:
 - minimum value (which we ignored)
 - mean (which we ignored)
@@ -57,14 +58,15 @@ For every tier of the available Azure Functions, Vegeta gave us the following in
 For our purposes, a test is _passed_ at a certain rate when, for ten minutes straight, more than 98% of the requests are fullfilled and the 95th percentile for that rate takes less or equal to 999 milliseconds to reply. 999 milliseconds can be considered a lax paramater; take into consideration that this test is supposed to give you the _higher_ limit of the infrastructure, which your users won't hopefully encouter continuously.
 In this test, we did not use B tiers of app functions, as they are not reported as production ready by Microsoft.
 
-### "S" tiers
-
-Upper limits were testing by deploying to the Functions a very basic API (/api/SimpleJson) that does the follow:
+Upper limits were tested by deploying to the Functions a very basic API (/api/SimpleJson) that does the follow:
 - it creates an object in memory with a GUID and a randorm string
 - it serializes the object and gives it back to the client.
 
 We believe any API must do _at least_ this (and a lot more). So, this can be considered the absolute upper limit for your needs.
-These were the results for Linux Functions (prices in April 2023):
+
+### "S" tiers
+
+These were the results for Linux Functions (prices in April 2023) when we requested the "simpleJson" API:
 
 | *Tier*      | CPUs   | RAM    | Storage| Price/Month |*Max requests/s*|   
 |-------------|--------|--------|--------|-------------|----------------|
@@ -80,16 +82,14 @@ These were the results for Windows Functions:
 | *Windows  S2*  |      2 | 3.50 GB|   50 GB|         135 |          *200* | 
 | *Windows  S3*  |      4 | 7.50 GB|   50 GB|         270 |          *500* |
 
-From this picture you can already gather these considerations:
-
-- Windows workloads, in the S* tier, allow you more requests than Linux, at a slightly increased price. 
+From this picture you can gather than Windows workloads, in the S* tier, allow you more requests than Linux, at a slightly increased price. 
 
 ### "P*V2" tiers
 
 These tiers are the second generation of "premium" app services.  
-Compared to "S" tiers, they have more memory and perform much, much better. They should be your choice for most workloads.
+Compared to "S" tiers, they have more memory and perform much, much better. They can still be your choice for most workloads where you don't need the P3 tier (which also gives you long-term discount which are not allowed for P2 tiers).
 
-These are the Linux P\*V2 functions:
+Findings for the Linux P\*V2 functions:
 
 | *Tier*        | CPUs   | RAM     | Storage| Price/Month |*Max requests/s*|   
 |---------------|--------|---------|--------|-------------|----------------|
@@ -97,15 +97,37 @@ These are the Linux P\*V2 functions:
 | *Linux P2V2*  |      2 |  7.50 GB|  250 GB|         156 |          *400* | 
 | *Linux P3V2*  |      4 | 14.00 GB|  250 GB|         311 |          *750* |
 
-These were the results for the Windows P\*V2 Functions:
+Findings for the Windows P\*V2 Functions:
 
-| *Tier*        | CPUs   | RAM     | Storage| Price/Month |*Max requests/s*|   
-|---------------|--------|---------|--------|-------------|----------------|
-| *Windows P1V2*  |      1 |  3.50 GB|  250 GB|          78 |          *150* |
-| *Windows P2V2*  |      2 |  7.50 GB|  250 GB|         156 |          *400* | 
-| *Windows P3V2*  |      4 | 14.00 GB|  250 GB|         311 |          *750* |
+| *Tier*          | CPUs   | RAM     | Storage| Price/Month |*Max requests/s*|   
+|-----------------|--------|---------|--------|-------------|----------------|
+| *Windows P1V2*  |      1 |  3.50 GB|  250 GB|         135 |          *250* |
+| *Windows P2V2*  |      2 |  7.50 GB|  250 GB|         270 |          *600* | 
+| *Windows P3V2*  |      4 | 14.00 GB|  250 GB|         539 |         *1050* |
+
+You can see here that Windows tiers can get very expensive but also _very_ performant. A Windows P3 function will serve more than 1000 requests per second.
+
+### "P*V3" tiers
+
+These are the best newest in the Azure app service plans.  
+They don't necessarily perform better than the P2 counterparts. However, they allow for "reservation" (long term discounts) if you promise to use them for one or three years (the longer the commitment, the stronger the discount). This makes them a very good fit when you know you are going to need app services in the next year (even if not for the same purposes as today: nothing prevents you from buying an app service now and use it with different domain names in the future, taking advantage of the same discount.)
+
+Findings for the Linux P\*V*3* functions:
+
+| *Tier*      |CPUs| RAM |Storage| EUR/Month|3 years EUR/month|*Max requests/s*|   
+|-------------|----|-----|-------|----------|-----------------|----------------|
+| *Linux P1V3*|  2 | 8 GB| 250 GB|       120|               54|             450|
+| *Linux P2V3*|  4 |16 GB| 250 GB|       240|              108|             750|
+| *Linux P3V3*|  8 |32 GB| 250 GB|       480|              216|            1050|
 
 
+Findings for the Windows P\*V*3* Functions:
 
-## Summary: more cost-effectively tiers
+| *Tier*        |CPUs| RAM |Storage| EUR/Month|3 years EUR/month|*Max requests/s*|   
+|---------------|----|-----|-------|----------|-----------------|----------------|
+| *Windows P1V3*|  2 | 8 GB| 250 GB|       227|              136|             500|
+| *Windows P2V3*|  4 |16 GB| 250 GB|       456|              274|            1000|
+| *Windows P3V3*|  8 |32 GB| 250 GB|       911|              547|            1050|
 
+
+You can see that Linux workloads definitely less expensive than the Windows. The difference is more remarkable than in the other tiers. If you need a lot of requests to support and you can commit for one or three years, the decision to go to a Linux P3 app service seems quite obvious. 
