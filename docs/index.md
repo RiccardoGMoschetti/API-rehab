@@ -16,8 +16,8 @@ Our journey starts with these technologies:
 - Azure Functions on App Service Plans (both Linux and Windows)
 - .NET workloads
 
-## What we found for Azure Functions?
-Nothing that we did not expect: more expensive Azure Functions guaranteed better performance.  
+## What we found for Azure Functions
+Nothing that we did not expect: more expensive Azure Functions guarantee better performance.  
 However, how better and how expensive intrigued us in some cases, especially for the top tier.
 
 ## How we measured Azure Functions
