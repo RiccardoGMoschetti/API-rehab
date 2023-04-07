@@ -39,7 +39,7 @@ The client machine generating the load was a 64 GB / 8 CPU Ubuntu 22.04 VM.
 The Azure functions were hosted in the same data center and virtual network of the VM, via private endpoints.
 Also the Azure Redis Cache and the SQL Database were in the same network, on different subnets. This is an architectural drawing of the solution:  
 <img src="./assets/images/Architecture_ApiSault_Functions_on_Azure.drawio.png"/>.  
-You can download the original diagrams.net (formerly draw.io) drawing <a href="https://github.com/RiccardoGMoschetti/API-sault/blob/0309d506e0a3876d8de130dd95a27e126fe9ea6b/docs/Architecture_ApiSault_Functions_on_Azure.drawio" download="api-rehab.drawio">here</a>.
+You can download the original diagrams.net (formerly draw.io) drawing <a href="https://raw.githubusercontent.com/RiccardoGMoschetti/API-rehab/c8f3b1b1118a8573efea524b1d0d6d2d2921c8d7/docs/Architecture_ApiSault_Functions_on_Azure.drawio" download="api-rehab.drawio">here</a>.
 
 ## What is better, Linux or Windows?
 They are very similar, except for the P2 tier, where Windows is definitely better. For the P3 tier, Linux is more comparable.  
