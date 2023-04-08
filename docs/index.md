@@ -1,10 +1,10 @@
 # How many requests will my APIs support? When will it break?
-That is the question that has bugged IT professionals ever since.  
+Those questiona have bugged IT professionals (developers, system administrators and architects alike) ever since.  
 Two main variables determine the answer:
-- what hardware you'll be using
-- the scalability of the software you'll be writing
+- what hardware you'll be using;
+- the scalability of the software you'll be writing.
 
-Whereas the second factor is difficult to determine, you can discover the upper limits of the first, and work from there.
+While the second factor is difficult to establish, you can discover the upper limits of the first and work from there.
 
 This site would like to give you some data to help you make these decisions: 
 - _what pricing tier is needed to sustain a certain number of API calls?_
