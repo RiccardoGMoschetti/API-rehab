@@ -1,5 +1,5 @@
 # How many requests will my APIs support? When will it break?
-Those questiona have bugged IT professionals (developers, system administrators and architects alike) ever since.  
+Those questions have bugged IT professionals (developers, system administrators and architects alike) ever since.  
 Two main variables determine the answer:
 - what hardware you'll be using;
 - the scalability of the software you'll be writing.
