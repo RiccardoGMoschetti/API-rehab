@@ -4,33 +4,63 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Net;
-using System.Runtime.ConstrainedExecution;
+    
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
+
 
 namespace APIsault.Azure.Servers.Functions {
     public class AllFunctions {
+        private readonly TelemetryClient telemetryClient;
         private readonly ILogger _logger;
-        public AllFunctions(ILoggerFactory loggerFactory) {
+        private readonly Task<RedisConnection> _redisConnectionFactory;
+        private RedisConnection? _redisConnection;
+        public AllFunctions(ILoggerFactory loggerFactory, Task<RedisConnection> redisConnectionFactory) {
             _logger = loggerFactory.CreateLogger<AllFunctions>();
+            _redisConnectionFactory = redisConnectionFactory;
+    
         }
 
         private static Random random = new Random();
-        private object MakePerson() {
+        private object MakePerson(string? fromCache=null) {
             return new {
                 id = Guid.NewGuid().ToString(),
-                name = new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 20).Select(s => s[random.Next(s.Length)]).ToArray())
+                name = fromCache?? new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 20).Select(s => s[random.Next(s.Length)]).ToArray())
             };
         }
-  
 
+        [Function ("HitCache")]
+        public async Task<HttpResponseData> HitCache([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req) {
+            _redisConnection = await _redisConnectionFactory;
+            _logger.LogInformation("Entered the SimpleJson API");
+
+            var keyToRetrieve = "A"+(random.Next(100)+1).ToString();
+            string jsonToReturn = string.Empty;
+            try {
+                var valueFromCache = await _redisConnection.BasicRetryAsync(async (db) => await db.StringGetAsync(keyToRetrieve));
+                jsonToReturn = JsonConvert.SerializeObject(MakePerson(valueFromCache)) ;
+            }
+
+            catch (Exception ex) {
+                _logger.LogError($"Error in reading from cache: {ex.Message}");
+            }
+       
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+            response.WriteString(jsonToReturn);
+            _logger.LogInformation("Leaving the SimpleJson API");
+            return response;
+        }
+      
         [Function("SimpleJson")]
-        public HttpResponseData SimpleJson([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req) {
+        public  HttpResponseData SimpleJson([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req) {
             _logger.LogInformation("Entered the SimpleJson API");
             string jsonToReturn = JsonConvert.SerializeObject(MakePerson());
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
             response.WriteString(jsonToReturn);
             _logger.LogInformation("Leaving the SimpleJson API");
-
             return response;
         }
 

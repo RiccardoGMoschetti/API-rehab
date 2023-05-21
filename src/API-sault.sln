@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{C4732B18-8FD4-4C77-B0A3-1DA4A1349F58}"
 	ProjectSection(SolutionItems) = preProject
 		performanceStresser.sh = performanceStresser.sh
+		Functions\Properties\PopulateRedis.txt = Functions\Properties\PopulateRedis.txt
 	EndProjectSection
 EndProject
 Global
