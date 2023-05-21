@@ -1,10 +1,10 @@
-remote_theme: pages-themes/hacker@v0.2.0
+remote_theme: pages-themes/modernist@v0.2.0
 plugins:
 - jekyll-remote-theme 
 show_downloads: false
-title: API-sault
+title: API Rehab
 description: A performance extravaganza
 github:
   is_project_page: true
-  repository_url: https://github.com/RiccardoGMoschetti/API-sault
+  repository_url: https://github.com/RiccardoGMoschetti/API-rehab
 exclude:
